@@ -1,4 +1,5 @@
 const express = require('express');
+const morgan = require('morgan');
 const bodyParser = require('body-parser');
 const config = require('config');
 const BaseApp = require('./baseApp');
@@ -9,6 +10,7 @@ class ExpressApp extends BaseApp {
     this.port = config.get('api.port');
     this.host = config.get('api.host');
     this.express = express();
+    this.express.use(morgan('dev'));
     this.express.use(bodyParser.urlencoded({ extended: true }));
     this.express.use(bodyParser.json());
     this.expressRouter = express.Router();
