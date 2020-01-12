@@ -1,15 +1,12 @@
 const BaseController = require('./baseController');
-const User = require('../server/models/user');
+const models = require('../server/models/index');
 
 class UserController extends BaseController {
   async getUser() {
     const { id } = this.query;
 
     try {
-      // const userModel = new UserModel({});
-      // const resource = await userModel.getResource(this.uriGenerator);
-      // const resource = { id: parseInt(id), name: 'test', password: '12' };
-      const resource = await models.User.findById(id);
+      const resource = await models.User.findByPk(id);
       this.ok(resource);
     } catch (err) {
       this.error(err);
@@ -18,15 +15,13 @@ class UserController extends BaseController {
 
   async createUser() {
     const { name, password } = this.body;
+
     try {
-      console.log('name', name)
-      // const userModel = new UserModel({});
-      // const resource = await userModel.getResource(this.uriGenerator);
       const resource = models.User.create({
         name: name,
         password: password
       });
-      this.ok(resource);
+      this.create(resource);
     } catch (err) {
       this.error(err);
     }
