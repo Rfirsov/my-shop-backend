@@ -1,6 +1,8 @@
 const express = require('express');
 const morgan = require('morgan');
 const bodyParser = require('body-parser');
+const passport = require('passport');
+const LocalStrategy = require('passport-local').Strategy;
 const config = require('config');
 const BaseApp = require('./baseApp');
 
@@ -26,6 +28,22 @@ class ExpressApp extends BaseApp {
     this.express.use((req, res) => {
       res.status(404).send({ url: `${req.originalUrl} not found` });
     });
+
+    passport.use(new LocalStrategy(
+      function(username, password, done) {
+        User.findOne({ username: username }, function(err, user) {
+          if (err) { return done(err); }
+          if (!user) {
+            return done(null, false, { message: 'Incorrect username.' });
+          }
+          if (!user.validPassword(password)) {
+            return done(null, false, { message: 'Incorrect password.' });
+          }
+          return done(null, user);
+        });
+      }
+    ));
+
     this.express.listen(this.port, this.host);
     console.log(`RESTful API server started on ${this.host}:${this.port}`);
   }
